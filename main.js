@@ -136,9 +136,14 @@
         (st.length ? '<div class="stats">' + st.map(function (x) {
           return '<div class="stat"><b><span data-count="' + esc(x.value) + '" data-suffix="' + esc(x.suffix || "") + '">' + esc(x.value) + esc(x.suffix || "") + "</span></b><small>" + esc(x.label) + "</small></div>";
         }).join("") + "</div>" : "") +
-        (lead.length ? '<h3 class="sub-head">' + esc(s.leadershipHeading || "Leadership") + '</h3><ul class="list">' + lead.map(function (r) {
-          return "<li><div><strong>" + esc(r.role) + "</strong>" + (r.org ? ", " + esc(r.org) : "") + "</div>" +
-            '<div class="meta">' + esc(r.years) + "</div>" + (r.line ? '<div class="sub">' + esc(r.line) + "</div>" : "") + "</li>";
+        (lead.length ? '<h3 class="sub-head">' + esc(s.leadershipHeading || "Leadership") + '</h3><ul class="list">' + lead.map(function (r, n) {
+          var title = "<div><strong>" + esc(r.role) + "</strong>" + (r.org ? ", " + esc(r.org) : "") + "</div>";
+          var years = '<div class="meta">' + esc(r.years) + "</div>";
+          if (!r.line) return '<li class="job"><div class="job__head">' + title + years + "</div></li>";
+          // Click a position to open the one-line description under it.
+          return '<li class="job"><button type="button" class="job__head" aria-expanded="false" aria-controls="job-' + n + '">' + title + years +
+            '<span class="job__chev" aria-hidden="true"></span></button>' +
+            '<div class="job__body" id="job-' + n + '"><div><p class="sub">' + esc(r.line) + "</p></div></div></li>";
         }).join("") + "</ul>" : "") + "</div>";
       if (!pt.image) return text;
       return '<div class="about"><div class="portrait glass">' + img(pt.image, pt.alt || C.name, pt.focus, "") + "</div>" + text + "</div>";
@@ -352,7 +357,14 @@
     if (hero) navIo.observe(hero);
   }
 
-  /* ---------- wow layer: split text, stats, pill, cursor, magnets, ripples ---------- */
+  /* ---------- experience rows: click to open or close ---------- */
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("button.job__head") : null;
+    if (!b) return;
+    b.setAttribute("aria-expanded", b.getAttribute("aria-expanded") === "true" ? "false" : "true");
+  });
+
+  /* ---------- wow layer: split text, stats, pill, cursor, ripples ---------- */
   var nav = $(".nav"), pill = $(".nav__pill");
   function placePill() {
     if (!nav || !pill) return;
