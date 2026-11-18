@@ -97,6 +97,7 @@
 
   var html = '<section class="hero" id="top">' + heroImg + '<div class="hero__shade"></div>' +
     '<div class="hero__text">' +
+    (L.linkedin && H.qr !== false ? '<a class="hero__qr glass" href="' + esc(L.linkedin) + '" target="_blank" rel="noopener" aria-label="Open my LinkedIn"><div id="qr-hero" class="qrbox"></div><span>' + esc(H.qrLabel || "LinkedIn") + "</span></a>" : "") +
     "<h1>" + esc(C.name) + "</h1>" +
     (C.tagline ? '<p class="tagline">' + esc(C.tagline) + "</p>" : "") +
     (C.intro ? '<p class="intro">' + esc(C.intro) + "</p>" : "") +
@@ -177,12 +178,13 @@
   $("#footer").innerHTML = esc(C.footer || "");
 
   /* ---------- LinkedIn QR (always made from links.linkedin) ---------- */
-  var qrBox = $("#qr");
-  if (qrBox && window.qrcode) {
+  // Both QR codes are made from links.linkedin, so changing the link changes the codes.
+  if (window.qrcode && L.linkedin) {
     var q = window.qrcode(0, "M");
     q.addData(L.linkedin);
     q.make();
-    qrBox.innerHTML = q.createSvgTag({ cellSize: 4, margin: 2, scalable: true, alt: "QR code for LinkedIn" });
+    var svg = q.createSvgTag({ cellSize: 4, margin: 2, scalable: true, alt: "QR code for LinkedIn" });
+    ["qr", "qr-hero"].forEach(function (id) { var box = document.getElementById(id); if (box) box.innerHTML = svg; });
   }
 
   /* ---------- solid bar after the hero ---------- */

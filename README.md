@@ -26,7 +26,7 @@ Replace `assets/resume.pdf`. Then remake the phone preview in Terminal from this
 `sips -s format jpeg -Z 1400 assets/resume.pdf --out assets/resume-preview.jpg`
 
 ## LinkedIn QR code
-Made automatically from `links.linkedin`. Change the link and the code follows.
+Made automatically from `links.linkedin` (first screen and Contact). Change the link and both follow. Hide the first-screen one with `hero.qr: false`.
 
 ## Colors and fonts
 Top of `styles.css`: `--accent`, `--text`, `--bg`, `--font-display`, `--font-body`.

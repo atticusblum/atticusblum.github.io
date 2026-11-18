@@ -32,6 +32,9 @@ window.CONTENT = {
     webp: "assets/hero.webp", // set to "" if you swap in a new hero.jpg and don't make a WebP
     focus: "48% 65%",
     alt: "Atticus climbing a glacier at sunrise above a sea of clouds",
+    // LinkedIn QR code in the top right of the first screen (made from links.linkedin). qr: false hides it.
+    qr: true,
+    qrLabel: "Scan for my LinkedIn",
   },
 
   // Arrow links under the buttons. "to" is a section id below.
