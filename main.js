@@ -7,7 +7,7 @@
   var C = window.CONTENT || {};
   var motion = !matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (motion) document.documentElement.classList.add("js-motion");
-  var ALL = ["about", "projects", "academics", "personal", "mountaineering", "future", "contact"];
+  var ALL = ["about", "projects", "academics", "personal", "future", "contact"];
   var ORDER = Array.isArray(C.order) && C.order.length ? C.order : ALL;
 
   /* ---------- helpers ---------- */
@@ -37,12 +37,13 @@
   };
 
   /* ---------- which sections have content ---------- */
+  // Photo sections can use groups: [{ title, items }] or a plain items: [] list.
+  function groupsOf(s) { return Array.isArray(s.groups) ? s.groups : [{ title: "", items: s.items }]; }
   var has = {
     about: function (s) { return list(s.paragraphs).length || list(s.leadership).length; },
     academics: function (s) { return s.school || list(s.coursework).length || list(s.honors).length; },
     projects: function (s) { return list(s.items).length; },
-    personal: function (s) { return list(s.items).length; },
-    mountaineering: function (s) { return list(s.items).length; },
+    personal: function (s) { return groupsOf(s).some(function (g) { return list(g.items).length; }); },
     future: function (s) { return list(s.paragraphs).length; },
     contact: function () { return C.links && (C.links.email || C.links.linkedin); },
   };
@@ -106,7 +107,6 @@
   }
   function paras(a) { return list(a).map(function (p) { return "<p>" + esc(p) + "</p>"; }).join(""); }
 
-  function photos(id, s, i) { return render.__photos(id, s, i); }
   var render = {
     about: function (s, i) {
       var lead = list(s.leadership), pt = s.portrait || {}, st = list(s.stats);
@@ -150,17 +150,20 @@
       var out = head("projects", i) + '<div class="grid grid--featured">' + cards(items) + "</div>";
       return out;
     },
-    personal: function (s, i) { return photos("personal", s, i); },
-    mountaineering: function (s, i) { return photos("mountaineering", s, i); },
-    __photos: function (id, s, i) {
-      return '<div class="head glass"><span class="kicker">' + num(i) + "</span><h2>" + esc(s.heading || label(id)) + "</h2>" +
+    personal: function (s, i) {
+      return '<div class="head glass"><span class="kicker">' + num(i) + "</span><h2>" + esc(s.heading || label("personal")) + "</h2>" +
         (s.intro ? '<p style="margin:.5rem 0 0;color:var(--muted)">' + esc(s.intro) + "</p>" : "") + "</div>" +
-        '<div class="grid">' + list(s.items).map(function (p, k) {
-          return '<button class="card photo tilt" data-cursor="View" type="button" data-photo="' + id + ':' + k + '" aria-label="View ' + esc(p.title || "photo") + '">' +
-            img(p.image, p.title || "", p.focus, "card__img") +
-            '<div class="card__body">' + (p.title ? '<div class="card__title">' + esc(p.title) + "</div>" : "") +
-            (p.caption ? '<p class="card__desc">' + esc(p.caption) + "</p>" : "") + "</div></button>";
-        }).join("") + "</div>";
+        groupsOf(s).map(function (g, gi) {
+          var items = list(g.items);
+          if (!items.length) return "";
+          return (g.title ? '<h3 class="group-title glass">' + esc(g.title) + "</h3>" : "") +
+            '<div class="grid">' + items.map(function (p, k) {
+              return '<button class="card photo tilt" data-cursor="View" type="button" data-photo="personal:' + gi + ":" + k + '" aria-label="View ' + esc(p.title || "photo") + '">' +
+                img(p.image, p.title || "", p.focus, "card__img") +
+                '<div class="card__body">' + (p.title ? '<div class="card__title">' + esc(p.title) + "</div>" : "") +
+                (p.caption ? '<p class="card__desc">' + esc(p.caption) + "</p>" : "") + "</div></button>";
+            }).join("") + "</div>";
+        }).join("");
     },
     future: function (s, i) { return '<div class="panel glass" style="max-width:760px">' + head("future", i, true) + '<div class="lead">' + paras(s.paragraphs) + "</div></div>"; },
     contact: function (s, i) {
@@ -277,7 +280,7 @@
     var ph = e.target.closest("[data-photo]");
     if (ph) {
       var key = ph.getAttribute("data-photo").split(":");
-      openViewer(list(C[key[0]].items).map(function (x) { return { src: x.image, title: x.title, desc: x.caption }; }), +key[1]);
+      openViewer(list(groupsOf(C[key[0]])[+key[1]].items).map(function (x) { return { src: x.image, title: x.title, desc: x.caption }; }), +key[2]);
     }
   });
   $(".viewer__nav--prev", viewer).addEventListener("click", function () { show(at - 1); });
