@@ -37,13 +37,18 @@
   };
 
   /* ---------- which sections have content ---------- */
-  // Photo sections can use groups: [{ title, items }] or a plain items: [] list.
-  function groupsOf(s) { return Array.isArray(s.groups) ? s.groups : [{ title: "", items: s.items }]; }
+  // A gallery card (project or photo collection): optional cover image, plus gallery images.
+  // gallery entries can be "path" or { image, title }. A card with no images at all is hidden.
+  function shotsOf(p) {
+    var g = list(p.gallery).map(function (o) { return typeof o === "string" ? { image: o } : o; });
+    return (p.image ? [{ image: p.image, title: p.firstTitle }] : []).concat(g);
+  }
+  function usable(arr) { return list(arr).filter(function (p) { return shotsOf(p).length; }); }
   var has = {
     about: function (s) { return list(s.paragraphs).length || list(s.leadership).length; },
     academics: function (s) { return s.school || list(s.coursework).length || list(s.honors).length; },
-    projects: function (s) { return list(s.items).length; },
-    personal: function (s) { return groupsOf(s).some(function (g) { return list(g.items).length; }); },
+    projects: function (s) { return usable(s.items).length; },
+    personal: function (s) { return usable(s.items).length; },
     future: function (s) { return list(s.paragraphs).length; },
     contact: function () { return C.links && (C.links.email || C.links.linkedin); },
   };
@@ -107,6 +112,22 @@
   }
   function paras(a) { return list(a).map(function (p) { return "<p>" + esc(p) + "</p>"; }).join(""); }
 
+  function galleryGrid(id, all, unit) {
+    all = list(all);
+    var cards = all.map(function (p, n) {
+      var shots = shotsOf(p);
+      if (!shots.length) return "";
+      var out = !!(p.linkOnly && p.link);
+      var tag = out ? '<span class="card__count">Live site &#8599;</span>' : (shots.length > 1 ? '<span class="card__count">' + shots.length + " " + unit + "</span>" : "");
+      var inner = img(shots[0].image, p.title, p.focus, "card__img") +
+        '<div class="card__body"><div class="card__title">' + esc(p.title) + tag + "</div>" +
+        (p.description ? '<p class="card__desc">' + esc(p.description) + "</p>" : "") + "</div>";
+      return out
+        ? '<a class="card glass tilt" data-cursor="Open" href="' + esc(p.link) + '" target="_blank" rel="noopener" aria-label="Open ' + esc(p.title) + ' (new tab)">' + inner + "</a>"
+        : '<button class="card glass tilt" data-cursor="View" type="button" data-gallery="' + id + ":" + n + '" aria-label="View ' + esc(p.title) + '">' + inner + "</button>";
+    }).join("");
+    return '<div class="grid grid--featured">' + cards + "</div>";
+  }
   var render = {
     about: function (s, i) {
       var lead = list(s.leadership), pt = s.portrait || {}, st = list(s.stats);
@@ -131,39 +152,11 @@
         ((cw.length || hn.length) ? '<div class="panel glass">' + (cw.length ? "<h3>" + esc(s.courseworkHeading || "Coursework") + "</h3>" + chips(cw) : "") +
         (hn.length ? "<h3>" + esc(s.honorsHeading || "Honors") + "</h3>" + chips(hn) : "") + "</div>" : "") + "</div>";
     },
-    projects: function (s, i) {
-      var items = list(s.items);
-      function cards(arr) {
-        return arr.map(function (p) {
-          var n = items.indexOf(p);
-          var out = !!(p.linkOnly && p.link);
-          var count = 1 + list(p.gallery).length;
-          var tag = out ? '<span class="card__count">Live site &#8599;</span>' : (count > 1 ? '<span class="card__count">' + count + " images</span>" : "");
-          var inner = img(p.image, p.title, p.focus, "card__img") +
-            '<div class="card__body"><div class="card__title">' + esc(p.title) + tag + "</div>" +
-            (p.description ? '<p class="card__desc">' + esc(p.description) + "</p>" : "") + "</div>";
-          return out
-            ? '<a class="card glass tilt" data-cursor="Open" href="' + esc(p.link) + '" target="_blank" rel="noopener" aria-label="Open ' + esc(p.title) + ' (new tab)">' + inner + "</a>"
-            : '<button class="card glass tilt" data-cursor="View" type="button" data-project="' + n + '" aria-label="View ' + esc(p.title) + '">' + inner + "</button>";
-        }).join("");
-      }
-      var out = head("projects", i) + '<div class="grid grid--featured">' + cards(items) + "</div>";
-      return out;
-    },
+    projects: function (s, i) { return head("projects", i) + galleryGrid("projects", s.items, "images"); },
     personal: function (s, i) {
       return '<div class="head glass"><span class="kicker">' + num(i) + "</span><h2>" + esc(s.heading || label("personal")) + "</h2>" +
         (s.intro ? '<p style="margin:.5rem 0 0;color:var(--muted)">' + esc(s.intro) + "</p>" : "") + "</div>" +
-        groupsOf(s).map(function (g, gi) {
-          var items = list(g.items);
-          if (!items.length) return "";
-          return (g.title ? '<h3 class="group-title glass">' + esc(g.title) + "</h3>" : "") +
-            '<div class="grid">' + items.map(function (p, k) {
-              return '<button class="card photo tilt" data-cursor="View" type="button" data-photo="personal:' + gi + ":" + k + '" aria-label="View ' + esc(p.title || "photo") + '">' +
-                img(p.image, p.title || "", p.focus, "card__img") +
-                '<div class="card__body">' + (p.title ? '<div class="card__title">' + esc(p.title) + "</div>" : "") +
-                (p.caption ? '<p class="card__desc">' + esc(p.caption) + "</p>" : "") + "</div></button>";
-            }).join("") + "</div>";
-        }).join("");
+        galleryGrid("personal", s.items, "photos");
     },
     future: function (s, i) { return '<div class="panel glass" style="max-width:760px">' + head("future", i, true) + '<div class="lead">' + paras(s.paragraphs) + "</div></div>"; },
     contact: function (s, i) {
@@ -267,20 +260,13 @@
   function openViewer(list_, i) { shots = list_; show(i); if (!viewer.open) viewer.showModal(); }
 
   document.addEventListener("click", function (e) {
-    var p = e.target.closest("[data-project]");
-    if (p) {
-      var pr = list(C.projects.items)[+p.getAttribute("data-project")];
-      var imgs = [{ image: pr.image, title: pr.firstTitle }].concat(list(pr.gallery));
-      openViewer(imgs.map(function (g) {
-        var o = typeof g === "string" ? { image: g } : g;
+    var gl = e.target.closest("[data-gallery]");
+    if (gl) {
+      var key = gl.getAttribute("data-gallery").split(":");
+      var pr = list(C[key[0]].items)[+key[1]];
+      openViewer(shotsOf(pr).map(function (o) {
         return { src: o.image, title: o.title ? pr.title + ": " + o.title : pr.title, desc: pr.description, link: pr.link };
       }), 0);
-      return;
-    }
-    var ph = e.target.closest("[data-photo]");
-    if (ph) {
-      var key = ph.getAttribute("data-photo").split(":");
-      openViewer(list(groupsOf(C[key[0]])[+key[1]].items).map(function (x) { return { src: x.image, title: x.title, desc: x.caption }; }), +key[2]);
     }
   });
   $(".viewer__nav--prev", viewer).addEventListener("click", function () { show(at - 1); });

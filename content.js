@@ -51,7 +51,7 @@ window.CONTENT = {
     // The rectangle photo next to the text. Takes about 30% of the width.
     portrait: { image: "assets/portrait.jpg", focus: "50% 25%", alt: "Atticus Blum" },
     paragraphs: [
-      "I'm a first-year Business Administration student at Gonzaga's Jepson School of Business, working toward concentrations in Finance and Marketing.",
+      "I'm from West Seattle, and I'm a first-year Business Administration student at Gonzaga's Jepson School of Business, working toward concentrations in Finance and Marketing.",
       "I've been designing for clients since my freshman year of high school, from athletics graphics to admissions campaigns. Now I'm starting a website business for local businesses. This site is one of my builds.",
       "Outside of class you'll find me on a mountain, on a trail, or playing guitar.", // TODO: make this sound like you
     ],
@@ -158,24 +158,44 @@ window.CONTENT = {
     heading: "Off the clock",
     background: { image: "assets/bg/mountaineering-glacier.jpg", focus: "50% 30%" },
     intro: "Most weekends I'm outside.", // TODO: your own line
-    // Photos are grouped. Each group gets a small heading. Add another group for other interests,
-    // or use a single group with title: "" for no heading. Order here = order on the page.
-    groups: [
+    // Each item is a card that opens a photo gallery, like Projects.
+    // image = cover photo (optional: if left out, the first gallery photo is the cover).
+    // gallery = more photos, as "path" or { image: "path", title: "name in the viewer" }.
+    // A card with no photos at all hides itself. Add photos to Sports later and it appears.
+    items: [
       {
         title: "Mountaineering",
-        items: [
-          { title: "Above the clouds", caption: "Sunrise on the glacier." /* TODO: which mountain and when */, image: "assets/hero.jpg", focus: "48% 65%" },
-          { title: "On the rocks", caption: "Scrambling above the glacier." /* TODO: where and when */, image: "assets/mountaineering/scramble.jpg", focus: "70% 60%" },
-          { title: "Summit hood", caption: "Cold and worth it." /* TODO: mountain */, image: "assets/mountaineering/summit-hood.jpg", focus: "55% 55%" },
-          { title: "Above the sea of clouds", caption: "Early light with the team." /* TODO: mountain */, image: "assets/mountaineering/summit-cloud-sea.jpg", focus: "62% 40%" },
-          { title: "Snow slope", caption: "Heading up." /* TODO: mountain */, image: "assets/mountaineering/snow-slope.jpg", focus: "40% 55%" },
-          { title: "Ridge view", caption: "Volcanoes on the horizon." /* TODO: mountain */, image: "assets/mountaineering/ridge-view.jpg", focus: "36% 50%" },
-          { title: "Summit day", caption: "Clear sky, big view." /* TODO: mountain */, image: "assets/mountaineering/summit-day.jpg", focus: "72% 50%" },
-          { title: "Summit break", caption: "Taking in the view." /* TODO: where this was */, image: "assets/personal/summit.jpg", focus: "40% 60%" },
-          { title: "On the trail", caption: "Miles in the Cascades." /* TODO: trail name */, image: "assets/personal/trail.jpg", focus: "50% 55%" },
-          { title: "Alpine lake", caption: "Worth the climb." /* TODO: lake name */, image: "assets/personal/alpine-lake.jpg", focus: "60% 60%" },
-          { title: "Mt. Baker", caption: "Next on the list." /* TODO: add a caption */, image: "assets/personal/mt-baker.jpg", focus: "50% 40%" },
+        description: "Glaciers, early alarms, and the view from the top.", // TODO: your own line
+        image: "assets/hero.jpg",
+        firstTitle: "Above the clouds",
+        focus: "48% 65%",
+        gallery: [
+          { image: "assets/mountaineering/scramble.jpg", title: "On the rocks" },
+          { image: "assets/mountaineering/summit-hood.jpg", title: "Summit hood" },
+          { image: "assets/mountaineering/summit-cloud-sea.jpg", title: "Above the sea of clouds" },
+          { image: "assets/mountaineering/snow-slope.jpg", title: "Snow slope" },
+          { image: "assets/mountaineering/ridge-view.jpg", title: "Ridge view" },
+          { image: "assets/mountaineering/summit-day.jpg", title: "Summit day" },
+          { image: "assets/personal/mt-baker.jpg", title: "Mt. Baker" },
         ],
+      },
+      {
+        title: "On the trail",
+        description: "Trails, lakes, and summit breaks in the Cascades.", // TODO: your own line
+        image: "assets/personal/trail.jpg",
+        firstTitle: "On the trail",
+        focus: "50% 55%",
+        gallery: [
+          { image: "assets/personal/alpine-lake.jpg", title: "Alpine lake" },
+          { image: "assets/personal/summit.jpg", title: "Summit break" },
+        ],
+      },
+      {
+        title: "Sports",
+        description: "", // TODO: add a line when you add photos
+        image: "",
+        focus: "50% 50%",
+        gallery: [], // TODO: add sports photos here (put the files in assets/sports/)
       },
     ],
   },
