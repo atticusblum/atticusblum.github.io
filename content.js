@@ -192,10 +192,14 @@ window.CONTENT = {
       },
       {
         title: "Sports",
-        description: "", // TODO: add a line when you add photos
-        image: "",
-        focus: "50% 50%",
-        gallery: [], // TODO: add sports photos here (put the files in assets/sports/)
+        description: "Three-sport varsity athlete at Kennedy Catholic: baseball, basketball, and cross country.",
+        image: "assets/sports/baseball-closeup.jpg",
+        firstTitle: "Baseball",
+        focus: "50% 22%",
+        gallery: [
+          { image: "assets/sports/baseball-mound.jpg", title: "On the mound" },
+          { image: "assets/sports/basketball.jpg", title: "Basketball" },
+        ], // add more sports photos here (files in assets/sports/)
       },
     ],
   },
