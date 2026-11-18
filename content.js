@@ -55,6 +55,12 @@ window.CONTENT = {
       "I've been designing for clients since my freshman year of high school, from athletics graphics to admissions campaigns. Now I'm starting a website business for local businesses. This site is one of my builds.",
       "Outside of class you'll find me on a mountain, on a trail, or playing guitar.", // TODO: make this sound like you
     ],
+    // Count-up numbers under the paragraphs. Set stats: [] to hide them.
+    stats: [
+      { value: 2000, suffix: "+", label: "fans served per game" },
+      { value: 40, suffix: "%", label: "DECA attendance growth" },
+      { value: 5, suffix: "", label: "retreats led" },
+    ],
     leadershipHeading: "Experience and leadership",
     leadership: [
       { role: "Catering Server", org: "Levy Restaurants", years: "Oct 2026 to now", line: "Serve guests at catered events across Spokane's five largest venues as part of Levy's catering team." },
@@ -75,6 +81,11 @@ window.CONTENT = {
     college: "Jepson School of Business",
     degree: "B.B.A. Business Administration",
     focus: "Concentrations: Finance & Marketing (in progress)",
+    // extra lines shown under the degree
+    more: [
+      "Comprehensive Leadership Program",
+      "Minor: Leadership Studies",
+    ],
     year: "Class of 2030",
     courseworkHeading: "This semester",
     coursework: [

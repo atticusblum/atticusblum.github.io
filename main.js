@@ -5,6 +5,8 @@
 (function () {
   "use strict";
   var C = window.CONTENT || {};
+  var motion = !matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (motion) document.documentElement.classList.add("js-motion");
   var ALL = ["about", "projects", "academics", "personal", "future", "contact"];
   var ORDER = Array.isArray(C.order) && C.order.length ? C.order : ALL;
 
@@ -59,7 +61,7 @@
   }).join("");
   $("#bar").innerHTML =
     '<a class="mono" href="#top" aria-label="Back to top">' + esc(C.monogram || "") + "</a>" +
-    '<nav class="nav" aria-label="Sections">' + navLinks + "</nav>" +
+    '<nav class="nav" aria-label="Sections">' + navLinks + '<span class="nav__pill" aria-hidden="true"></span></nav>' +
     (sections.length ? '<button class="menu-btn" type="button" aria-haspopup="dialog">Menu</button>' : "");
   var menu = $("#menu");
   menu.innerHTML =
@@ -93,7 +95,9 @@
     (C.intro ? '<p class="intro">' + esc(C.intro) + "</p>" : "") +
     contactButtons("glass") +
     (arrows ? '<div class="arrows">' + arrows + "</div>" : "") +
-    "</div></section>";
+    "</div>" +
+    (sections.length ? '<a class="hero__cue" href="#' + sections[0] + '" data-go="' + sections[0] + '" aria-label="Scroll down"><span>Scroll</span><i></i></a>' : "") +
+    "</section>";
 
   /* ---------- sections ---------- */
   function head(id, i, bare) {
@@ -103,8 +107,11 @@
 
   var render = {
     about: function (s, i) {
-      var lead = list(s.leadership), pt = s.portrait || {};
+      var lead = list(s.leadership), pt = s.portrait || {}, st = list(s.stats);
       var text = '<div class="panel glass">' + head("about", i, true) + '<div class="lead">' + paras(s.paragraphs) + "</div>" +
+        (st.length ? '<div class="stats">' + st.map(function (x) {
+          return '<div class="stat"><b><span data-count="' + esc(x.value) + '" data-suffix="' + esc(x.suffix || "") + '">' + esc(x.value) + esc(x.suffix || "") + "</span></b><small>" + esc(x.label) + "</small></div>";
+        }).join("") + "</div>" : "") +
         (lead.length ? '<h3 class="sub-head">' + esc(s.leadershipHeading || "Leadership") + '</h3><ul class="list">' + lead.map(function (r) {
           return "<li><div><strong>" + esc(r.role) + "</strong>" + (r.org ? ", " + esc(r.org) : "") + "</div>" +
             '<div class="meta">' + esc(r.years) + "</div>" + (r.line ? '<div class="sub">' + esc(r.line) + "</div>" : "") + "</li>";
@@ -117,7 +124,7 @@
       function chips(a) { return '<ul class="chips">' + a.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>"; }
       return head("academics", i) + '<div class="edu">' +
         (s.school ? '<div class="panel glass"><div class="school">' + esc(s.school) + "</div>" +
-          [s.college, s.degree, s.focus].filter(Boolean).map(function (x) { return "<p>" + esc(x) + "</p>"; }).join("") +
+          [s.college, s.degree, s.focus].concat(list(s.more)).filter(Boolean).map(function (x) { return "<p>" + esc(x) + "</p>"; }).join("") +
           (s.year ? '<p class="year">' + esc(s.year) + "</p>" : "") + "</div>" : "") +
         ((cw.length || hn.length) ? '<div class="panel glass">' + (cw.length ? "<h3>" + esc(s.courseworkHeading || "Coursework") + "</h3>" + chips(cw) : "") +
         (hn.length ? "<h3>" + esc(s.honorsHeading || "Honors") + "</h3>" + chips(hn) : "") + "</div>" : "") + "</div>";
@@ -134,8 +141,8 @@
             '<div class="card__body"><div class="card__title">' + esc(p.title) + tag + "</div>" +
             (p.description ? '<p class="card__desc">' + esc(p.description) + "</p>" : "") + "</div>";
           return out
-            ? '<a class="card glass tilt" href="' + esc(p.link) + '" target="_blank" rel="noopener" aria-label="Open ' + esc(p.title) + ' (new tab)">' + inner + "</a>"
-            : '<button class="card glass tilt" type="button" data-project="' + n + '" aria-label="View ' + esc(p.title) + '">' + inner + "</button>";
+            ? '<a class="card glass tilt" data-cursor="Open" href="' + esc(p.link) + '" target="_blank" rel="noopener" aria-label="Open ' + esc(p.title) + ' (new tab)">' + inner + "</a>"
+            : '<button class="card glass tilt" data-cursor="View" type="button" data-project="' + n + '" aria-label="View ' + esc(p.title) + '">' + inner + "</button>";
         }).join("");
       }
       var out = head("projects", i) + '<div class="grid grid--featured">' + cards(items) + "</div>";
@@ -145,7 +152,7 @@
       return '<div class="head glass"><span class="kicker">' + num(i) + "</span><h2>" + esc(s.heading || label("personal")) + "</h2>" +
         (s.intro ? '<p style="margin:.5rem 0 0;color:var(--muted)">' + esc(s.intro) + "</p>" : "") + "</div>" +
         '<div class="grid">' + list(s.items).map(function (p, k) {
-          return '<button class="card photo tilt" type="button" data-photo="' + k + '" aria-label="View ' + esc(p.title || "photo") + '">' +
+          return '<button class="card photo tilt" data-cursor="View" type="button" data-photo="' + k + '" aria-label="View ' + esc(p.title || "photo") + '">' +
             img(p.image, p.title || "", p.focus, "card__img") +
             '<div class="card__body">' + (p.title ? '<div class="card__title">' + esc(p.title) + "</div>" : "") +
             (p.caption ? '<p class="card__desc">' + esc(p.caption) + "</p>" : "") + "</div></button>";
@@ -162,8 +169,8 @@
 
   sections.forEach(function (id, i) {
     var bg = C[id].background || {};
-    html += '<section class="section' + (bg.image ? "" : " section--plain") + '" id="' + id + '">' +
-      '<div class="section__bg" aria-hidden="true">' + (bg.image ? img(bg.image, "", bg.focus, "") : "") + "</div>" +
+    html += '<section class="section' + (bg.image ? "" : " section--plain") + '" id="' + id + '" data-num="' + num(i) + '">' +
+      '<div class="section__bg" aria-hidden="true">' + (bg.image ? img(bg.image, "", bg.focus, "").replace('loading="lazy"', 'loading="eager"') : "") + "</div>" +
       '<div class="wrap reveal">' + render[id](C[id], i) + "</div></section>";
   });
   $("#main").innerHTML = html;
@@ -342,11 +349,124 @@
       es.forEach(function (en) {
         if (!en.isIntersecting) return;
         document.querySelectorAll(".nav a").forEach(function (a) { a.classList.toggle("is-here", a.getAttribute("data-go") === en.target.id); });
+        placePill();
       });
     }, { rootMargin: "-45% 0px -50% 0px" });
     sections.forEach(function (id) { navIo.observe(document.getElementById(id)); });
     if (hero) navIo.observe(hero);
   }
+
+  /* ---------- wow layer: split text, stats, pill, cursor, magnets, ripples ---------- */
+  var nav = $(".nav"), pill = $(".nav__pill");
+  function placePill() {
+    if (!nav || !pill) return;
+    var a = nav.querySelector("a.is-here");
+    if (!a) { pill.style.opacity = "0"; return; }
+    pill.style.opacity = "1";
+    pill.style.setProperty("--x", a.offsetLeft + "px");
+    pill.style.setProperty("--w", a.offsetWidth + "px");
+  }
+  addEventListener("resize", placePill);
+
+  // progress line across the top
+  var bar2 = document.createElement("div");
+  bar2.className = "progress"; bar2.setAttribute("aria-hidden", "true");
+  document.body.appendChild(bar2);
+
+  // count-up numbers
+  var counters = document.querySelectorAll("[data-count]");
+  function runCount(el) {
+    var end = +el.getAttribute("data-count"), suf = el.getAttribute("data-suffix") || "", t0 = null, dur = 1700;
+    function step(t) {
+      if (t0 === null) t0 = t;
+      var p = Math.min(1, (t - t0) / dur), e = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
+      el.textContent = Math.round(end * e).toLocaleString("en-US") + suf;
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  if (motion && "IntersectionObserver" in window) {
+    counters.forEach(function (el) { el.textContent = "0" + (el.getAttribute("data-suffix") || ""); });
+    var cio = new IntersectionObserver(function (es) {
+      es.forEach(function (en) { if (en.isIntersecting) { runCount(en.target); cio.unobserve(en.target); } });
+    }, { threshold: 0.6 });
+    counters.forEach(function (el) { cio.observe(el); });
+  }
+
+  // split the name and section headings into letters that rise in
+  function split(el) {
+    var t = el.textContent, i = 0;
+    el.setAttribute("aria-label", t);
+    el.classList.add("split");
+    el.innerHTML = '<span aria-hidden="true">' + t.split(" ").map(function (w) {
+      return '<span class="w">' + w.split("").map(function (ch) {
+        return '<span class="ch" style="--i:' + (i++) + '">' + esc(ch) + "</span>";
+      }).join("") + "</span>";
+    }).join(" ") + "</span>";
+  }
+  if (motion) {
+    var h1 = $(".hero h1");
+    if (h1) {
+      split(h1);
+      requestAnimationFrame(function () { requestAnimationFrame(function () { h1.classList.add("in"); }); });
+      setTimeout(function () { h1.classList.add("done"); }, 2400);
+    }
+    document.querySelectorAll(".head h2").forEach(split);
+  }
+
+  var fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
+  if (motion && fine) {
+    root.classList.add("has-cursor");
+    var cur = document.createElement("div");
+    cur.className = "cursor"; cur.setAttribute("aria-hidden", "true");
+    cur.innerHTML = '<div class="cursor__ring"><span class="cursor__label"></span></div>';
+    var dot = document.createElement("div");
+    dot.className = "cursor-dot"; dot.setAttribute("aria-hidden", "true");
+    document.body.appendChild(cur); document.body.appendChild(dot);
+    var ring = cur.firstChild, label = $(".cursor__label", cur);
+    var tx = 0, ty = 0, rx = 0, ry = 0, run = false, seen = false, lastState = "";
+    function loop() {
+      rx += (tx - rx) * 0.2; ry += (ty - ry) * 0.2;
+      cur.style.transform = "translate3d(" + rx.toFixed(1) + "px," + ry.toFixed(1) + "px,0)";
+      if (Math.abs(tx - rx) > 0.15 || Math.abs(ty - ry) > 0.15) requestAnimationFrame(loop); else run = false;
+    }
+    addEventListener("pointermove", function (e) {
+      tx = e.clientX; ty = e.clientY;
+      dot.style.transform = "translate3d(" + tx + "px," + ty + "px,0)";
+      if (!seen) { seen = true; rx = tx; ry = ty; cur.classList.add("on"); dot.classList.add("on"); }
+      var t = e.target.closest ? e.target.closest("[data-cursor], a, button, .btn, .nav a") : null;
+      var state = !t ? "" : t.hasAttribute("data-cursor") ? "card" : "link";
+      if (state !== lastState) {
+        lastState = state;
+        cur.dataset.state = state;
+        dot.classList.toggle("hide", state === "card");
+        if (state === "card") label.textContent = t.getAttribute("data-cursor");
+      }
+      if (!run) { run = true; requestAnimationFrame(loop); }
+    }, { passive: true });
+    document.addEventListener("pointerleave", function () { cur.classList.remove("on"); dot.classList.remove("on"); seen = false; });
+    document.addEventListener("pointerdown", function (e) {
+      cur.classList.add("press");
+      var r = document.createElement("span");
+      r.className = "ripple"; r.style.left = e.clientX + "px"; r.style.top = e.clientY + "px";
+      document.body.appendChild(r);
+      r.addEventListener("animationend", function () { r.remove(); });
+    });
+    addEventListener("pointerup", function () { cur.classList.remove("press"); });
+
+    // buttons pull toward the cursor
+    var magnets = Array.prototype.slice.call(document.querySelectorAll(".hero .btn, .nav a, .mono, .menu-btn, .hero__cue"));
+    addEventListener("pointermove", function (e) {
+      magnets.forEach(function (el) {
+        var r = el.getBoundingClientRect();
+        var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+        var dx = e.clientX - cx, dy = e.clientY - cy, d = Math.hypot(dx, dy), reach = Math.max(r.width, 64) * 0.9;
+        if (d < reach) { el.style.translate = (dx * 0.28).toFixed(1) + "px " + (dy * 0.38).toFixed(1) + "px"; }
+        else if (el.style.translate) { el.style.translate = ""; }
+      });
+    }, { passive: true });
+  }
+  placePill();
 
   /* if the page was opened with #section in the link, jump there now that it exists */
   if (location.hash.length > 1) {
