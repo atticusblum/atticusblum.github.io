@@ -5,7 +5,7 @@
 (function () {
   "use strict";
   var C = window.CONTENT || {};
-  var ALL = ["about", "projects", "personal", "academics", "future", "contact"];
+  var ALL = ["about", "projects", "academics", "personal", "future", "contact"];
   var ORDER = Array.isArray(C.order) && C.order.length ? C.order : ALL;
 
   /* ---------- helpers ---------- */
@@ -236,7 +236,10 @@
     at = (i + shots.length) % shots.length;
     var s = shots[at], many = shots.length > 1;
     var im = $(".viewer__img", viewer);
-    im.src = s.src; im.alt = s.title || "";
+    // fade the old picture out, swap, fade the new one in
+    if (viewer.open) { im.classList.add("is-swap"); }
+    var swap = function () { im.src = s.src; im.alt = s.title || ""; };
+    if (viewer.open) { setTimeout(function () { swap(); im.onload = function () { im.classList.remove("is-swap"); }; if (im.complete) im.classList.remove("is-swap"); }, 160); } else { swap(); }
     $(".modal__title", viewer).textContent = s.title || "";
     $(".viewer__desc", viewer).innerHTML = esc(s.desc || "") +
       (s.link ? ' <a class="btn glass" style="margin-left:.5rem" href="' + esc(s.link) + '" target="_blank" rel="noopener">' + ICON.open + "Visit</a>" : "");

@@ -42,7 +42,7 @@ window.CONTENT = {
 
   // Section order on the page and in the nav (numbers 01, 02... follow it).
   // Reorder by moving these words. A section with no content hides itself.
-  order: ["about", "projects", "personal", "academics", "future", "contact"],
+  order: ["about", "projects", "academics", "personal", "future", "contact"],
 
   about: {
     nav: "About",
@@ -96,7 +96,7 @@ window.CONTENT = {
   projects: {
     nav: "Projects",
     heading: "Projects",
-    background: { image: "assets/bg/projects-baker.jpg", focus: "50% 40%" },
+    background: { image: "assets/bg/projects-hike.jpg", focus: "50% 55%" },
     // Gallery images can be a plain path, or { image: "path", title: "name shown in the viewer" }.
     // Order here = order on the page. link = optional "Visit" button in the viewer.
     items: [
