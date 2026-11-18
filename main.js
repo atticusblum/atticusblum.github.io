@@ -127,12 +127,15 @@
       function cards(arr) {
         return arr.map(function (p) {
           var n = items.indexOf(p);
+          var out = !!(p.linkOnly && p.link);
           var count = 1 + list(p.gallery).length;
-          return '<button class="card glass tilt" type="button" data-project="' + n + '" aria-label="View ' + esc(p.title) + '">' +
-            img(p.image, p.title, p.focus, "card__img") +
-            '<div class="card__body"><div class="card__title">' + esc(p.title) +
-            (count > 1 ? '<span class="card__count">' + count + " images</span>" : "") + "</div>" +
-            (p.description ? '<p class="card__desc">' + esc(p.description) + "</p>" : "") + "</div></button>";
+          var tag = out ? '<span class="card__count">Live site &#8599;</span>' : (count > 1 ? '<span class="card__count">' + count + " images</span>" : "");
+          var inner = img(p.image, p.title, p.focus, "card__img") +
+            '<div class="card__body"><div class="card__title">' + esc(p.title) + tag + "</div>" +
+            (p.description ? '<p class="card__desc">' + esc(p.description) + "</p>" : "") + "</div>";
+          return out
+            ? '<a class="card glass tilt" href="' + esc(p.link) + '" target="_blank" rel="noopener" aria-label="Open ' + esc(p.title) + ' (new tab)">' + inner + "</a>"
+            : '<button class="card glass tilt" type="button" data-project="' + n + '" aria-label="View ' + esc(p.title) + '">' + inner + "</button>";
         }).join("");
       }
       var out = head("projects", i) + '<div class="grid grid--featured">' + cards(items) + "</div>";

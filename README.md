@@ -14,7 +14,7 @@ Open `content.js`, edit the words between quotes, save. Search for `TODO` to fin
 1. Drop the image(s) into `assets/design/`.
 2. In `content.js`, copy one block inside `projects.items` and change `title`, `description`, `image`, `focus`.
 3. Extra images go in `gallery: [...]` as a path, or `{ image: "path", title: "Name" }` to label it in the viewer. `link` adds a Visit button.
-Order in the list = order on the page. Personal photos work the same way (`personal.items`).
+`linkOnly: true` with a `link` makes the card open that link in a new tab instead of the image viewer. Order in the list = order on the page. Personal photos work the same way (`personal.items`).
 
 ## Reorder, hide, or re-photo a section
 Reorder: move the words in `order: [...]`. Hide: empty its list (`items: []`). Photo behind the glass: each section's `background.image` and `focus` (put files in `assets/bg/`). The About portrait is `about.portrait`.

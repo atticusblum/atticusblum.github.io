@@ -15,7 +15,7 @@ window.CONTENT = {
 
   name: "Atticus Blum",
   monogram: "AB",
-  tagline: "Business @ Gonzaga · Designer · Builder",
+  tagline: "", // optional line under your name; leave "" for none
   intro: "", // optional short line under the tagline; leave "" for none
 
   links: {
@@ -57,6 +57,7 @@ window.CONTENT = {
     ],
     leadershipHeading: "Experience and leadership",
     leadership: [
+      { role: "Catering Server", org: "Levy Restaurants", years: "Oct 2026 to now", line: "Serve guests at catered events across Spokane's five largest venues as part of Levy's catering team." },
       { role: "Consultant", org: "Gonzaga New Venture Lab", years: "Fall 2026 to now", line: "Student team engagement with The Depot, a Spokane culinary collective and food hall." },
       { role: "Freelance Graphic Designer", org: "Self-employed", years: "Fall 2026 to now", line: "Admissions marketing and hallway posters for Kennedy Catholic." },
       { role: "Graphic Designer", org: "Kennedy Catholic Brand Team & Athletics", years: "2022 to 2026", line: "Four years of athletics, event, and admissions design; senior-year brand intern." },
@@ -105,12 +106,8 @@ window.CONTENT = {
         description: "A personal AI dashboard I built: calendar, tasks, school, and email in one place.",
         image: "assets/design/jarvis-dashboard.jpg",
         focus: "50% 0%",
-        link: "",
-        gallery: [
-          { image: "assets/design/jarvis-core.jpg", title: "Jarvis core" },
-          { image: "assets/design/jarvis-calendar.jpg", title: "Jarvis calendar" },
-          { image: "assets/design/jarvis-learn.jpg", title: "Jarvis learn" },
-        ],
+        link: "https://jarvis-atticus8.vercel.app/",
+        linkOnly: true, // true = clicking the card opens the link in a new tab (no image viewer)
       },
       {
         title: "Kennedy Catholic Work",

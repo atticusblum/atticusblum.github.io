@@ -138,6 +138,7 @@ p { margin: 0 0 1em; }
 }
 @keyframes rise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
 @keyframes fade-down { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: none; } }
+.hero h1 + .actions { margin-top: 1.6rem; }
 .hero h1 { font-size: clamp(2.8rem, 8vw, 6rem); font-weight: 500; }
 .tagline { font-size: clamp(1.05rem, 2.2vw, 1.35rem); font-weight: 600; margin: .7rem 0 1.4rem; letter-spacing: .01em; }
 .intro { font-size: 1.1rem; max-width: 36ch; margin: -.6rem 0 1.4rem; }
@@ -200,7 +201,7 @@ p { margin: 0 0 1em; }
 .lead p:last-child { margin-bottom: 0; }
 
 /* About: portrait about 30% wide next to the text */
-.about { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 7fr); gap: clamp(1.25rem, 3vw, 2.5rem); align-items: start; }
+.about { display: grid; grid-template-columns: minmax(0, 42fr) minmax(0, 58fr); gap: clamp(1.25rem, 3vw, 2.5rem); align-items: start; }
 .portrait { padding: 10px; position: sticky; top: calc(var(--bar-h) + 1.5rem); }
 .portrait img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: calc(var(--radius) - 8px); }
 .panel .head { display: block; padding: 0; margin: 0 0 1.25rem; }
@@ -226,7 +227,7 @@ p { margin: 0 0 1em; }
 .grid { display: grid; gap: 1.25rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); }
 .grid--featured { grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
 .card {
-  display: block; width: 100%; text-align: left; padding: 8px; color: #fff;
+  display: block; text-decoration: none; width: 100%; text-align: left; padding: 8px; color: #fff;
   transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--lift, 0px));
   transition: transform .5s var(--ease), box-shadow .3s var(--ease);
 }
