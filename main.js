@@ -449,18 +449,6 @@
       r.addEventListener("animationend", function () { r.remove(); });
     });
     addEventListener("pointerup", function () { cur.classList.remove("press"); });
-
-    // buttons pull toward the cursor
-    var magnets = Array.prototype.slice.call(document.querySelectorAll(".hero .btn, .nav a, .mono, .menu-btn, .hero__cue"));
-    addEventListener("pointermove", function (e) {
-      magnets.forEach(function (el) {
-        var r = el.getBoundingClientRect();
-        var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-        var dx = e.clientX - cx, dy = e.clientY - cy, d = Math.hypot(dx, dy), reach = Math.max(r.width, 64) * 0.9;
-        if (d < reach) { el.style.translate = (dx * 0.28).toFixed(1) + "px " + (dy * 0.38).toFixed(1) + "px"; }
-        else if (el.style.translate) { el.style.translate = ""; }
-      });
-    }, { passive: true });
   }
   placePill();
 

@@ -33,7 +33,7 @@ window.CONTENT = {
     focus: "48% 65%",
     alt: "Atticus climbing a glacier at sunrise above a sea of clouds",
     // LinkedIn QR code in the top right of the first screen (made from links.linkedin). qr: false hides it.
-    qr: true,
+    qr: false,
     qrLabel: "Scan for my LinkedIn",
   },
 
