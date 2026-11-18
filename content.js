@@ -4,6 +4,8 @@
   Images: put the file in assets/ and change the path here.
   "focus" is the part of a photo that must stay visible when it is cropped,
   as "x% y%" (left/top). "50% 50%" is the center, "50% 20%" keeps the top.
+  Every section can have a "background" photo. It sits behind the frosted glass.
+  Set background: { image: "" } for a plain dark background.
 */
 window.CONTENT = {
   site: {
@@ -14,7 +16,7 @@ window.CONTENT = {
   name: "Atticus Blum",
   monogram: "AB",
   tagline: "Business @ Gonzaga · Designer · Builder",
-  intro: "I design things, build websites, and climb mountains. Here's what I'm working on.",
+  intro: "", // optional short line under the tagline; leave "" for none
 
   links: {
     linkedin: "https://www.linkedin.com/in/atticusblum",
@@ -34,15 +36,20 @@ window.CONTENT = {
 
   // Arrow links under the buttons. "to" is a section id below.
   heroLinks: [
-    { label: "I learn", to: "academics" },
     { label: "I build", to: "projects" },
+    { label: "I learn", to: "academics" },
   ],
 
-  // Sections render in this order. Nav numbers (01, 02...) follow it.
-  // A section with no content hides itself and its nav button.
+  // Section order on the page and in the nav (numbers 01, 02... follow it).
+  // Reorder by moving these words. A section with no content hides itself.
+  order: ["about", "projects", "personal", "academics", "future", "contact"],
+
   about: {
     nav: "About",
     heading: "About",
+    background: { image: "assets/bg/about-lake.jpg", focus: "60% 60%" },
+    // The rectangle photo next to the text. Takes about 30% of the width.
+    portrait: { image: "assets/portrait.jpg", focus: "50% 25%", alt: "Atticus Blum" },
     paragraphs: [
       "I'm a first-year Business Administration student at Gonzaga's Jepson School of Business, working toward concentrations in Finance and Marketing.",
       "I've been designing for clients since my freshman year of high school, from athletics graphics to admissions campaigns. Now I'm starting a website business for local businesses. This site is one of my builds.",
@@ -62,6 +69,7 @@ window.CONTENT = {
   academics: {
     nav: "Academics",
     heading: "Academics",
+    background: { image: "assets/bg/academics-graduation.jpg", focus: "50% 30%" },
     school: "Gonzaga University",
     college: "Jepson School of Business",
     degree: "B.B.A. Business Administration",
@@ -88,6 +96,7 @@ window.CONTENT = {
   projects: {
     nav: "Projects",
     heading: "Projects",
+    background: { image: "assets/bg/projects-baker.jpg", focus: "50% 40%" },
     featuredHeading: "Featured",
     moreHeading: "More work",
     // featured: true puts a card under "Featured". gallery = extra images in the viewer.
@@ -171,6 +180,7 @@ window.CONTENT = {
   personal: {
     nav: "Personal",
     heading: "Off the clock",
+    background: { image: "assets/bg/personal-trail.jpg", focus: "50% 50%" },
     intro: "Most weekends I'm outside.", // TODO: your own line
     items: [
       { title: "Above the clouds", caption: "Sunrise on the glacier." /* TODO: which mountain and when */, image: "assets/hero.jpg", focus: "48% 65%" },
@@ -185,6 +195,7 @@ window.CONTENT = {
   future: {
     nav: "Future",
     heading: "What's next",
+    background: { image: "assets/bg/future-summit.jpg", focus: "40% 50%" },
     paragraphs: [
       "I'm starting a website business for local Spokane businesses. Fast, clean sites that are easy to update. If you know someone who needs one, I'd love to talk.",
       "I'm also looking for finance and marketing internships for summer 2027.", // TODO: confirm both lines
@@ -194,6 +205,7 @@ window.CONTENT = {
   contact: {
     nav: "Contact",
     heading: "Let's talk",
+    background: { image: "assets/bg/contact-gonzaga.jpg", focus: "50% 50%" },
     line: "Fastest way to reach me is email or LinkedIn.",
     qrLabel: "Scan to open my LinkedIn",
   },

@@ -16,8 +16,9 @@ Open `content.js`, edit the words between quotes, save. Search for `TODO` to fin
 3. `featured: true` puts it under Featured. Extra images go in `gallery: ["assets/design/x.jpg"]`. `link` adds a Visit button.
 Order in the list = order on the page. Personal photos work the same way (`personal.items`).
 
-## Hide a section
-Empty its list (for example `items: []` or `paragraphs: []`). The section and its nav button disappear.
+## Reorder, hide, or re-photo a section
+Reorder: move the words in `order: [...]`. Hide: empty its list (`items: []`). Photo behind the glass: each section's `background.image` and `focus` (put files in `assets/bg/`). The About portrait is `about.portrait`.
+Glass look (blur, tint, glow): the "Glass" block at the top of `styles.css`.
 
 ## Change the resume
 Replace `assets/resume.pdf`. Then remake the phone preview in Terminal from this folder:

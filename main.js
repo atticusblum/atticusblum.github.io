@@ -5,7 +5,8 @@
 (function () {
   "use strict";
   var C = window.CONTENT || {};
-  var ORDER = ["about", "academics", "projects", "personal", "future", "contact"];
+  var ALL = ["about", "projects", "personal", "academics", "future", "contact"];
+  var ORDER = Array.isArray(C.order) && C.order.length ? C.order : ALL;
 
   /* ---------- helpers ---------- */
   function esc(s) {
@@ -42,7 +43,7 @@
     future: function (s) { return list(s.paragraphs).length; },
     contact: function () { return C.links && (C.links.email || C.links.linkedin); },
   };
-  var sections = ORDER.filter(function (id) { return C[id] && has[id](C[id]); });
+  var sections = ORDER.filter(function (id) { return C[id] && has[id] && has[id](C[id]); });
   function label(id) { return C[id].nav || C[id].heading || id; }
 
   /* ---------- head ---------- */
@@ -90,36 +91,38 @@
     "<h1>" + esc(C.name) + "</h1>" +
     (C.tagline ? '<p class="tagline">' + esc(C.tagline) + "</p>" : "") +
     (C.intro ? '<p class="intro">' + esc(C.intro) + "</p>" : "") +
-    contactButtons("btn--glass") +
+    contactButtons("glass") +
     (arrows ? '<div class="arrows">' + arrows + "</div>" : "") +
     "</div></section>";
 
   /* ---------- sections ---------- */
-  function head(id, i) {
-    return '<span class="kicker">' + num(i) + "</span><h2>" + esc(C[id].heading || label(id)) + "</h2>";
+  function head(id, i, bare) {
+    return '<div class="head' + (bare ? "" : " glass") + '"><span class="kicker">' + num(i) + "</span><h2>" + esc(C[id].heading || label(id)) + "</h2></div>";
   }
   function paras(a) { return list(a).map(function (p) { return "<p>" + esc(p) + "</p>"; }).join(""); }
 
   var render = {
-    about: function (s) {
-      var lead = list(s.leadership);
-      return '<div class="lead">' + paras(s.paragraphs) + "</div>" +
-        (lead.length ? "<h3>" + esc(s.leadershipHeading || "Leadership") + '</h3><ul class="list">' + lead.map(function (r) {
+    about: function (s, i) {
+      var lead = list(s.leadership), pt = s.portrait || {};
+      var text = '<div class="panel glass">' + head("about", i, true) + '<div class="lead">' + paras(s.paragraphs) + "</div>" +
+        (lead.length ? '<h3 class="sub-head">' + esc(s.leadershipHeading || "Leadership") + '</h3><ul class="list">' + lead.map(function (r) {
           return "<li><div><strong>" + esc(r.role) + "</strong>" + (r.org ? ", " + esc(r.org) : "") + "</div>" +
             '<div class="meta">' + esc(r.years) + "</div>" + (r.line ? '<div class="sub">' + esc(r.line) + "</div>" : "") + "</li>";
-        }).join("") + "</ul>" : "");
+        }).join("") + "</ul>" : "") + "</div>";
+      if (!pt.image) return text;
+      return '<div class="about"><div class="portrait glass">' + img(pt.image, pt.alt || C.name, pt.focus, "") + "</div>" + text + "</div>";
     },
-    academics: function (s) {
+    academics: function (s, i) {
       var cw = list(s.coursework), hn = list(s.honors);
       function chips(a) { return '<ul class="chips">' + a.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>"; }
-      return '<div class="edu">' +
-        (s.school ? '<div class="edu-card"><div class="school">' + esc(s.school) + "</div>" +
+      return head("academics", i) + '<div class="edu">' +
+        (s.school ? '<div class="panel glass"><div class="school">' + esc(s.school) + "</div>" +
           [s.college, s.degree, s.focus].filter(Boolean).map(function (x) { return "<p>" + esc(x) + "</p>"; }).join("") +
           (s.year ? '<p class="year">' + esc(s.year) + "</p>" : "") + "</div>" : "") +
-        "<div>" + (cw.length ? "<h3>" + esc(s.courseworkHeading || "Coursework") + "</h3>" + chips(cw) : "") +
-        (hn.length ? "<h3>" + esc(s.honorsHeading || "Honors") + "</h3>" + chips(hn) : "") + "</div></div>";
+        ((cw.length || hn.length) ? '<div class="panel glass">' + (cw.length ? "<h3>" + esc(s.courseworkHeading || "Coursework") + "</h3>" + chips(cw) : "") +
+        (hn.length ? "<h3>" + esc(s.honorsHeading || "Honors") + "</h3>" + chips(hn) : "") + "</div>" : "") + "</div>";
     },
-    projects: function (s) {
+    projects: function (s, i) {
       var items = list(s.items);
       var feat = items.filter(function (p) { return p.featured; });
       var rest = items.filter(function (p) { return !p.featured; });
@@ -127,38 +130,42 @@
         return arr.map(function (p) {
           var n = items.indexOf(p);
           var count = 1 + list(p.gallery).length;
-          return '<button class="card" type="button" data-project="' + n + '" aria-label="View ' + esc(p.title) + '">' +
+          return '<button class="card glass tilt" type="button" data-project="' + n + '" aria-label="View ' + esc(p.title) + '">' +
             img(p.image, p.title, p.focus, "card__img") +
             '<div class="card__body"><div class="card__title">' + esc(p.title) +
             (count > 1 ? '<span class="card__count">' + count + " images</span>" : "") + "</div>" +
             (p.description ? '<p class="card__desc">' + esc(p.description) + "</p>" : "") + "</div></button>";
         }).join("");
       }
-      var out = "";
-      if (feat.length) out += (rest.length ? "<h3>" + esc(s.featuredHeading || "Featured") + "</h3>" : "") + '<div class="grid grid--featured">' + cards(feat) + "</div>";
-      if (rest.length) out += (feat.length ? "<h3>" + esc(s.moreHeading || "More work") + "</h3>" : "") + '<div class="grid">' + cards(rest) + "</div>";
+      var out = head("projects", i);
+      if (feat.length) out += (rest.length ? '<h3 class="group-title glass">' + esc(s.featuredHeading || "Featured") + "</h3>" : "") + '<div class="grid grid--featured">' + cards(feat) + "</div>";
+      if (rest.length) out += (feat.length ? '<h3 class="group-title glass">' + esc(s.moreHeading || "More work") + "</h3>" : "") + '<div class="grid">' + cards(rest) + "</div>";
       return out;
     },
-    personal: function (s) {
-      return (s.intro ? '<p class="lead">' + esc(s.intro) + "</p>" : "") +
-        '<div class="grid">' + list(s.items).map(function (p, i) {
-          return '<button class="card photo" type="button" data-photo="' + i + '" aria-label="View ' + esc(p.title || "photo") + '">' +
+    personal: function (s, i) {
+      return '<div class="head glass"><span class="kicker">' + num(i) + "</span><h2>" + esc(s.heading || label("personal")) + "</h2>" +
+        (s.intro ? '<p style="margin:.5rem 0 0;color:var(--muted)">' + esc(s.intro) + "</p>" : "") + "</div>" +
+        '<div class="grid">' + list(s.items).map(function (p, k) {
+          return '<button class="card photo tilt" type="button" data-photo="' + k + '" aria-label="View ' + esc(p.title || "photo") + '">' +
             img(p.image, p.title || "", p.focus, "card__img") +
             '<div class="card__body">' + (p.title ? '<div class="card__title">' + esc(p.title) + "</div>" : "") +
             (p.caption ? '<p class="card__desc">' + esc(p.caption) + "</p>" : "") + "</div></button>";
         }).join("") + "</div>";
     },
-    future: function (s) { return '<div class="lead">' + paras(s.paragraphs) + "</div>"; },
-    contact: function (s) {
-      return '<div class="contact"><div>' + (s.line ? '<p class="lead">' + esc(s.line) + "</p>" : "") +
+    future: function (s, i) { return '<div class="panel glass" style="max-width:760px">' + head("future", i, true) + '<div class="lead">' + paras(s.paragraphs) + "</div></div>"; },
+    contact: function (s, i) {
+      return '<div class="panel glass">' + head("contact", i, true) + '<div class="contact"><div>' + (s.line ? '<p class="lead">' + esc(s.line) + "</p>" : "") +
         (L.email ? '<a class="email" href="' + esc(mailto()) + '">' + esc(L.email) + "</a>" : "") +
-        contactButtons("btn--line") + "</div>" +
-        (L.linkedin ? '<div class="qr"><div id="qr"></div><p>' + esc(s.qrLabel || "LinkedIn") + "</p></div>" : "") + "</div>";
+        contactButtons("glass") + "</div>" +
+        (L.linkedin ? '<div class="qr"><div id="qr"></div><p>' + esc(s.qrLabel || "LinkedIn") + "</p></div>" : "") + "</div></div>";
     },
   };
 
   sections.forEach(function (id, i) {
-    html += '<section class="section" id="' + id + '"><div class="wrap reveal">' + head(id, i) + render[id](C[id]) + "</div></section>";
+    var bg = C[id].background || {};
+    html += '<section class="section' + (bg.image ? "" : " section--plain") + '" id="' + id + '">' +
+      '<div class="section__bg" aria-hidden="true">' + (bg.image ? img(bg.image, "", bg.focus, "") : "") + "</div>" +
+      '<div class="wrap reveal">' + render[id](C[id], i) + "</div></section>";
   });
   $("#main").innerHTML = html;
   $("#footer").innerHTML = esc(C.footer || "");
@@ -206,7 +213,7 @@
       '<iframe title="Resume preview"></iframe></div>' +
       '<div class="resume__actions">' +
       '<a class="btn btn--solid" href="' + esc(L.resume) + '" download>' + ICON.download + "Download PDF</a>" +
-      '<a class="btn btn--glass" href="' + esc(L.resume) + '" target="_blank" rel="noopener">' + ICON.open + "Open full screen</a></div>";
+      '<a class="btn glass" href="' + esc(L.resume) + '" target="_blank" rel="noopener">' + ICON.open + "Open full screen</a></div>";
     document.addEventListener("click", function (e) {
       if (!e.target.closest("[data-resume]")) return;
       // Big screens show the real PDF; phones show the preview picture.
@@ -236,7 +243,7 @@
     im.src = s.src; im.alt = s.title || "";
     $(".modal__title", viewer).textContent = s.title || "";
     $(".viewer__desc", viewer).innerHTML = esc(s.desc || "") +
-      (s.link ? ' <a class="btn btn--glass" style="margin-left:.5rem" href="' + esc(s.link) + '" target="_blank" rel="noopener">' + ICON.open + "Visit</a>" : "");
+      (s.link ? ' <a class="btn glass" style="margin-left:.5rem" href="' + esc(s.link) + '" target="_blank" rel="noopener">' + ICON.open + "Visit</a>" : "");
     $(".viewer__count", viewer).textContent = many ? (at + 1) + " / " + shots.length : "";
     $(".viewer__nav--prev", viewer).hidden = !many;
     $(".viewer__nav--next", viewer).hidden = !many;
@@ -286,6 +293,54 @@
     rv.forEach(function (el) { io.observe(el); });
   } else {
     rv.forEach(function (el) { el.classList.add("is-in"); });
+  }
+
+  /* ---------- glass that reacts to the mouse ---------- */
+  var still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var glasses = [], mouse = null, ticking = false, root = document.documentElement;
+  function collect() { glasses = Array.prototype.slice.call(document.querySelectorAll(".glass")); }
+  collect();
+  function frame() {
+    ticking = false;
+    if (!mouse) return;
+    var x = mouse.x, y = mouse.y, vw = innerWidth, vh = innerHeight;
+    // background photos drift a little against the mouse
+    root.style.setProperty("--px", ((x / vw) * 2 - 1).toFixed(3));
+    root.style.setProperty("--py", ((y / vh) * 2 - 1).toFixed(3));
+    for (var k = 0; k < glasses.length; k++) {
+      var g = glasses[k], r = g.getBoundingClientRect();
+      if (r.bottom < -200 || r.top > vh + 200) continue;
+      var dx = Math.max(r.left - x, 0, x - r.right), dy = Math.max(r.top - y, 0, y - r.bottom);
+      var glow = Math.max(0, 1 - Math.hypot(dx, dy) / 220);
+      g.style.setProperty("--mx", (x - r.left).toFixed(0) + "px");
+      g.style.setProperty("--my", (y - r.top).toFixed(0) + "px");
+      g.style.setProperty("--glow", glow.toFixed(2));
+      if (g.classList.contains("tilt") && !still) {
+        var inside = dx === 0 && dy === 0;
+        g.style.setProperty("--ry", inside ? (((x - r.left) / r.width - 0.5) * 7).toFixed(2) + "deg" : "0deg");
+        g.style.setProperty("--rx", inside ? ((0.5 - (y - r.top) / r.height) * 7).toFixed(2) + "deg" : "0deg");
+      }
+    }
+  }
+  function queue() { if (!ticking) { ticking = true; requestAnimationFrame(frame); } }
+  if (matchMedia("(hover: hover)").matches) {
+    addEventListener("pointermove", function (e) { mouse = { x: e.clientX, y: e.clientY }; queue(); }, { passive: true });
+    addEventListener("scroll", queue, { passive: true });
+    document.addEventListener("pointerleave", function () {
+      glasses.forEach(function (g) { g.style.setProperty("--glow", "0"); g.style.setProperty("--rx", "0deg"); g.style.setProperty("--ry", "0deg"); });
+    });
+  }
+
+  /* ---------- highlight the nav item for the section on screen ---------- */
+  if ("IntersectionObserver" in window) {
+    var navIo = new IntersectionObserver(function (es) {
+      es.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        document.querySelectorAll(".nav a").forEach(function (a) { a.classList.toggle("is-here", a.getAttribute("data-go") === en.target.id); });
+      });
+    }, { rootMargin: "-45% 0px -50% 0px" });
+    sections.forEach(function (id) { navIo.observe(document.getElementById(id)); });
+    if (hero) navIo.observe(hero);
   }
 
   /* if the page was opened with #section in the link, jump there now that it exists */
