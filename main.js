@@ -124,8 +124,6 @@
     },
     projects: function (s, i) {
       var items = list(s.items);
-      var feat = items.filter(function (p) { return p.featured; });
-      var rest = items.filter(function (p) { return !p.featured; });
       function cards(arr) {
         return arr.map(function (p) {
           var n = items.indexOf(p);
@@ -137,9 +135,7 @@
             (p.description ? '<p class="card__desc">' + esc(p.description) + "</p>" : "") + "</div></button>";
         }).join("");
       }
-      var out = head("projects", i);
-      if (feat.length) out += (rest.length ? '<h3 class="group-title glass">' + esc(s.featuredHeading || "Featured") + "</h3>" : "") + '<div class="grid grid--featured">' + cards(feat) + "</div>";
-      if (rest.length) out += (feat.length ? '<h3 class="group-title glass">' + esc(s.moreHeading || "More work") + "</h3>" : "") + '<div class="grid">' + cards(rest) + "</div>";
+      var out = head("projects", i) + '<div class="grid grid--featured">' + cards(items) + "</div>";
       return out;
     },
     personal: function (s, i) {
@@ -254,8 +250,11 @@
     var p = e.target.closest("[data-project]");
     if (p) {
       var pr = list(C.projects.items)[+p.getAttribute("data-project")];
-      var imgs = [pr.image].concat(list(pr.gallery));
-      openViewer(imgs.map(function (src) { return { src: src, title: pr.title, desc: pr.description, link: pr.link }; }), 0);
+      var imgs = [{ image: pr.image, title: pr.firstTitle }].concat(list(pr.gallery));
+      openViewer(imgs.map(function (g) {
+        var o = typeof g === "string" ? { image: g } : g;
+        return { src: o.image, title: o.title ? pr.title + ": " + o.title : pr.title, desc: pr.description, link: pr.link };
+      }), 0);
       return;
     }
     var ph = e.target.closest("[data-photo]");

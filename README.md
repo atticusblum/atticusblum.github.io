@@ -13,7 +13,7 @@ Open `content.js`, edit the words between quotes, save. Search for `TODO` to fin
 ## Add a project
 1. Drop the image(s) into `assets/design/`.
 2. In `content.js`, copy one block inside `projects.items` and change `title`, `description`, `image`, `focus`.
-3. `featured: true` puts it under Featured. Extra images go in `gallery: ["assets/design/x.jpg"]`. `link` adds a Visit button.
+3. Extra images go in `gallery: [...]` as a path, or `{ image: "path", title: "Name" }` to label it in the viewer. `link` adds a Visit button.
 Order in the list = order on the page. Personal photos work the same way (`personal.items`).
 
 ## Reorder, hide, or re-photo a section
