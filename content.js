@@ -131,12 +131,18 @@ window.CONTENT = {
       },
       {
         title: "AJB Recruiting Graphics",
-        description: "Offer announcements and statewide rankings for high school basketball.",
+        description: "Offer announcements, commitments, and statewide rankings for high school athletes.",
         image: "assets/design/ajb-tripp-haywood.jpg",
         focus: "50% 30%",
         link: "",
         featured: true,
-        gallery: ["assets/design/ajb-top-25.jpg"],
+        gallery: [
+          "assets/design/ajb-top-25.jpg",
+          "assets/design/ajb-sports-illustrated.jpg",
+          "assets/design/ajb-harvey-lieberman.jpg",
+          "assets/design/ajb-devon-forehand.jpg",
+          "assets/design/ajb-top-10-washington.jpg",
+        ],
       },
       {
         title: "Senior Prom 2026",
