@@ -59,11 +59,7 @@ window.CONTENT = {
       "Outside of class you'll find me on a mountain, on a trail, or playing guitar.", // TODO: make this sound like you
     ],
     // Count-up numbers under the paragraphs. Set stats: [] to hide them.
-    stats: [
-      { value: 2000, suffix: "+", label: "fans served per game" },
-      { value: 40, suffix: "%", label: "DECA attendance growth" },
-      { value: 5, suffix: "", label: "retreats led" },
-    ],
+    stats: [],
     leadershipHeading: "Experience and leadership",
     leadership: [
       { role: "Catering Server", org: "Levy Restaurants", years: "Oct 2026 to now", line: "Serve guests at catered events across Spokane's five largest venues as part of Levy's catering team." },

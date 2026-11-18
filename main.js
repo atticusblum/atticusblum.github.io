@@ -132,21 +132,26 @@
   var render = {
     about: function (s, i) {
       var lead = list(s.leadership), pt = s.portrait || {}, st = list(s.stats);
-      var text = '<div class="panel glass">' + head("about", i, true) + '<div class="lead">' + paras(s.paragraphs) + "</div>" +
+      // Top row: portrait and the words, same height. Below: experience across the full width in two columns.
+      var text = '<div class="panel glass about__text">' + head("about", i, true) + '<div class="lead">' + paras(s.paragraphs) + "</div>" +
         (st.length ? '<div class="stats">' + st.map(function (x) {
           return '<div class="stat"><b><span data-count="' + esc(x.value) + '" data-suffix="' + esc(x.suffix || "") + '">' + esc(x.value) + esc(x.suffix || "") + "</span></b><small>" + esc(x.label) + "</small></div>";
-        }).join("") + "</div>" : "") +
-        (lead.length ? '<h3 class="sub-head">' + esc(s.leadershipHeading || "Leadership") + '</h3><ul class="list">' + lead.map(function (r, n) {
-          var title = "<div><strong>" + esc(r.role) + "</strong>" + (r.org ? ", " + esc(r.org) : "") + "</div>";
-          var years = '<div class="meta">' + esc(r.years) + "</div>";
-          if (!r.line) return '<li class="job"><div class="job__head">' + title + years + "</div></li>";
-          // Click a position to open the one-line description under it.
-          return '<li class="job"><button type="button" class="job__head" aria-expanded="false" aria-controls="job-' + n + '">' + title + years +
-            '<span class="job__chev" aria-hidden="true"></span></button>' +
-            '<div class="job__body" id="job-' + n + '"><div><p class="sub">' + esc(r.line) + "</p></div></div></li>";
-        }).join("") + "</ul>" : "") + "</div>";
-      if (!pt.image) return text;
-      return '<div class="about"><div class="portrait glass">' + img(pt.image, pt.alt || C.name, pt.focus, "") + "</div>" + text + "</div>";
+        }).join("") + "</div>" : "") + "</div>";
+      function job(r, n) {
+        var title = "<div><strong>" + esc(r.role) + "</strong>" + (r.org ? '<span class="org">' + esc(r.org) + "</span>" : "") + "</div>";
+        var years = '<div class="meta">' + esc(r.years) + "</div>";
+        if (!r.line) return '<li class="job"><div class="job__head">' + title + years + "</div></li>";
+        // Click a position to open the one-line description under it.
+        return '<li class="job"><button type="button" class="job__head" aria-expanded="false" aria-controls="job-' + n + '">' + title + years +
+          '<span class="job__chev" aria-hidden="true"></span></button>' +
+          '<div class="job__body" id="job-' + n + '"><div><p class="sub">' + esc(r.line) + "</p></div></div></li>";
+      }
+      var half = Math.ceil(lead.length / 2);
+      var exp = lead.length ? '<div class="panel glass about__exp"><h3 class="sub-head">' + esc(s.leadershipHeading || "Leadership") + '</h3><div class="cols">' +
+        '<ul class="list">' + lead.slice(0, half).map(job).join("") + "</ul>" +
+        '<ul class="list">' + lead.slice(half).map(function (r, n) { return job(r, n + half); }).join("") + "</ul></div></div>" : "";
+      var portrait = pt.image ? '<div class="portrait glass">' + img(pt.image, pt.alt || C.name, pt.focus, "") + "</div>" : "";
+      return '<div class="about' + (pt.image ? "" : " about--solo") + '">' + portrait + text + exp + "</div>";
     },
     academics: function (s, i) {
       var cw = list(s.coursework), hn = list(s.honors);
