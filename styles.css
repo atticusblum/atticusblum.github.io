@@ -438,11 +438,11 @@ html.has-cursor .card { cursor: none; }
 /* LinkedIn QR on the first screen (desktop only) */
 .hero__qr {
   position: absolute; z-index: 2; right: var(--space); top: calc(var(--bar-h) + env(safe-area-inset-top) + clamp(1.5rem, 8vh, 6rem));
-  display: grid; justify-items: center; gap: .55rem; width: 158px; padding: .8rem .8rem .7rem; text-align: center; text-decoration: none;
-  text-shadow: none; font-size: .78rem; font-weight: 600; letter-spacing: .02em; line-height: 1.25;
+  display: grid; justify-items: center; gap: .7rem; width: 205px; padding: 1.05rem 1.05rem .9rem; text-align: center; text-decoration: none;
+  text-shadow: none; font-size: 1rem; font-weight: 600; letter-spacing: .02em; line-height: 1.25;
 }
-.hero__qr .qrbox { background: #fff; border-radius: 10px; padding: 7px; line-height: 0; }
-.hero__qr svg { width: 118px; height: 118px; display: block; }
+.hero__qr .qrbox { background: #fff; border-radius: 13px; padding: 9px; line-height: 0; }
+.hero__qr svg { width: 153px; height: 153px; display: block; }
 @media (prefers-reduced-motion: no-preference) {
   .hero__qr { animation: rise .9s var(--ease) .75s both; transition: transform .25s var(--ease), box-shadow .3s; }
   .hero__qr:hover { transform: translateY(-3px); }
