@@ -7,7 +7,7 @@
   var C = window.CONTENT || {};
   var motion = !matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (motion) document.documentElement.classList.add("js-motion");
-  var ALL = ["about", "projects", "academics", "personal", "future", "contact"];
+  var ALL = ["about", "projects", "academics", "personal", "mountaineering", "future", "contact"];
   var ORDER = Array.isArray(C.order) && C.order.length ? C.order : ALL;
 
   /* ---------- helpers ---------- */
@@ -42,6 +42,7 @@
     academics: function (s) { return s.school || list(s.coursework).length || list(s.honors).length; },
     projects: function (s) { return list(s.items).length; },
     personal: function (s) { return list(s.items).length; },
+    mountaineering: function (s) { return list(s.items).length; },
     future: function (s) { return list(s.paragraphs).length; },
     contact: function () { return C.links && (C.links.email || C.links.linkedin); },
   };
@@ -105,6 +106,7 @@
   }
   function paras(a) { return list(a).map(function (p) { return "<p>" + esc(p) + "</p>"; }).join(""); }
 
+  function photos(id, s, i) { return render.__photos(id, s, i); }
   var render = {
     about: function (s, i) {
       var lead = list(s.leadership), pt = s.portrait || {}, st = list(s.stats);
@@ -148,11 +150,13 @@
       var out = head("projects", i) + '<div class="grid grid--featured">' + cards(items) + "</div>";
       return out;
     },
-    personal: function (s, i) {
-      return '<div class="head glass"><span class="kicker">' + num(i) + "</span><h2>" + esc(s.heading || label("personal")) + "</h2>" +
+    personal: function (s, i) { return photos("personal", s, i); },
+    mountaineering: function (s, i) { return photos("mountaineering", s, i); },
+    __photos: function (id, s, i) {
+      return '<div class="head glass"><span class="kicker">' + num(i) + "</span><h2>" + esc(s.heading || label(id)) + "</h2>" +
         (s.intro ? '<p style="margin:.5rem 0 0;color:var(--muted)">' + esc(s.intro) + "</p>" : "") + "</div>" +
         '<div class="grid">' + list(s.items).map(function (p, k) {
-          return '<button class="card photo tilt" data-cursor="View" type="button" data-photo="' + k + '" aria-label="View ' + esc(p.title || "photo") + '">' +
+          return '<button class="card photo tilt" data-cursor="View" type="button" data-photo="' + id + ':' + k + '" aria-label="View ' + esc(p.title || "photo") + '">' +
             img(p.image, p.title || "", p.focus, "card__img") +
             '<div class="card__body">' + (p.title ? '<div class="card__title">' + esc(p.title) + "</div>" : "") +
             (p.caption ? '<p class="card__desc">' + esc(p.caption) + "</p>" : "") + "</div></button>";
@@ -224,7 +228,7 @@
       if (!e.target.closest("[data-resume]")) return;
       // Big screens show the real PDF; phones show the preview picture.
       var f = $("iframe", resume);
-      var big = matchMedia("(min-width: 861px)").matches || !L.resumePreview;
+      var big = matchMedia("(min-width: 981px)").matches || !L.resumePreview;
       resume.classList.toggle("is-pdf", big);
       if (big && !f.getAttribute("src")) f.setAttribute("src", L.resume + "#view=FitH");
       resume.showModal();
@@ -272,7 +276,8 @@
     }
     var ph = e.target.closest("[data-photo]");
     if (ph) {
-      openViewer(list(C.personal.items).map(function (x) { return { src: x.image, title: x.title, desc: x.caption }; }), +ph.getAttribute("data-photo"));
+      var key = ph.getAttribute("data-photo").split(":");
+      openViewer(list(C[key[0]].items).map(function (x) { return { src: x.image, title: x.title, desc: x.caption }; }), +key[1]);
     }
   });
   $(".viewer__nav--prev", viewer).addEventListener("click", function () { show(at - 1); });

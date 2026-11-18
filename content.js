@@ -42,7 +42,7 @@ window.CONTENT = {
 
   // Section order on the page and in the nav (numbers 01, 02... follow it).
   // Reorder by moving these words. A section with no content hides itself.
-  order: ["about", "projects", "academics", "personal", "future", "contact"],
+  order: ["about", "projects", "academics", "personal", "mountaineering", "future", "contact"],
 
   about: {
     nav: "About",
@@ -160,11 +160,27 @@ window.CONTENT = {
     intro: "Most weekends I'm outside.", // TODO: your own line
     items: [
       { title: "Above the clouds", caption: "Sunrise on the glacier." /* TODO: which mountain and when */, image: "assets/hero.jpg", focus: "48% 65%" },
+      { title: "On the trail", caption: "Miles in the Cascades." /* TODO: trail name */, image: "assets/personal/trail.jpg", focus: "50% 55%" },
+    ],
+  },
+
+  // Climbing photos. Same format as Personal. Add, remove or reorder items freely.
+  mountaineering: {
+    nav: "Mountaineering",
+    heading: "Mountaineering",
+    background: { image: "assets/bg/mountaineering-glacier.jpg", focus: "50% 30%" },
+    intro: "Glaciers, early alarms, and the view from the top.", // TODO: your own line
+    items: [
+      { title: "On the rocks", caption: "Scrambling above the glacier." /* TODO: where and when */, image: "assets/mountaineering/scramble.jpg", focus: "70% 60%" },
+      { title: "Summit hood", caption: "Cold and worth it." /* TODO: mountain */, image: "assets/mountaineering/summit-hood.jpg", focus: "55% 55%" },
+      { title: "Above the sea of clouds", caption: "Early light with the team." /* TODO: mountain */, image: "assets/mountaineering/summit-cloud-sea.jpg", focus: "62% 40%" },
+      { title: "Snow slope", caption: "Heading up." /* TODO: mountain */, image: "assets/mountaineering/snow-slope.jpg", focus: "40% 55%" },
+      { title: "Ridge view", caption: "Volcanoes on the horizon." /* TODO: mountain */, image: "assets/mountaineering/ridge-view.jpg", focus: "36% 50%" },
+      { title: "Summit day", caption: "Clear sky, big view." /* TODO: mountain */, image: "assets/mountaineering/summit-day.jpg", focus: "72% 50%" },
       { title: "Summit break", caption: "Taking in the view." /* TODO: where this was */, image: "assets/personal/summit.jpg", focus: "40% 60%" },
       { title: "On the trail", caption: "Miles in the Cascades." /* TODO: trail name */, image: "assets/personal/trail.jpg", focus: "50% 55%" },
       { title: "Alpine lake", caption: "Worth the climb." /* TODO: lake name */, image: "assets/personal/alpine-lake.jpg", focus: "60% 60%" },
       { title: "Mt. Baker", caption: "Next on the list." /* TODO: add a caption */, image: "assets/personal/mt-baker.jpg", focus: "50% 40%" },
-      { title: "Gonzaga", caption: "Home base in Spokane.", image: "assets/personal/gonzaga.jpg", focus: "50% 50%" },
     ],
   },
 
